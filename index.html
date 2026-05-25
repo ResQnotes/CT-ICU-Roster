@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CT-ICU Final Roster</title>
+
+<style>
+    body { font-family: 'Segoe UI', sans-serif; background: #f1f5f9; padding: 20px; }
+    .container { max-width: 950px; margin: auto; background: #fff; padding: 25px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+    h2 { text-align: center; color: #1e3a8a; }
+    .selection-panel { border: 2px solid #3b82f6; padding: 15px; margin-bottom: 15px; border-radius: 8px; }
+    .doc-buttons { display: flex; flex-wrap: wrap; gap: 8px; }
+    .doc-btn { padding: 10px 14px; border-radius: 20px; border: 1px solid #ccc; cursor: pointer; font-weight: bold; transition: 0.3s; }
+    .doc-btn span { display: block; font-size: 11px; }
+    .doc-btn:disabled { background: #ddd; cursor: not-allowed; opacity: 0.7; }
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    th, td { border: 1px solid #ccc; padding: 10px; }
+    th { background: #eee; }
+    input { width: 92%; padding: 8px; cursor: pointer; border: 1px solid #ccc; border-radius: 4px; }
+    .selected-input { border: 2px solid #3b82f6; background-color: #eff6ff; outline: none; }
+    .print { margin-top: 15px; float: right; padding: 10px 20px; background: green; color: white; border: none; cursor: pointer; border-radius: 5px; }
+    .clear-btn { background: #ef4444; color: white; }
+</style>
+</head>
+
+<body>
+
+<div class="container">
+    <h2>CT-ICU Weekly Roster</h2>
+    <div class="selection-panel">
+        <b>💡 নির্দেশনা:</b> আগে ঘরে ক্লিক করুন → তারপর ডাক্তার নির্বাচন করুন
+        <div class="doc-buttons" id="buttons" style="margin-top: 10px;"></div>
+    </div>
+
+    <table>
+        <thead>
+            <tr><th>Day</th><th>Morning</th><th>Night (Max 2)</th></tr>
+        </thead>
+        <tbody>
+            <tr><td>Saturday</td><td><input id="sat_m" readonly></td><td><input id="sat_n" readonly></td></tr>
+            <tr><td>Sunday</td><td><input id="sun_m" readonly></td><td><input id="sun_n" readonly></td></tr>
+            <tr><td>Monday</td><td><input id="mon_m" readonly></td><td><input id="mon_n" readonly></td></tr>
+            <tr><td>Tuesday</td><td><input id="tue_m" readonly></td><td><input id="tue_n" readonly></td></tr>
+            <tr><td>Wednesday</td><td><input id="wed_m" readonly></td><td><input id="wed_n" readonly></td></tr>
+            <tr><td>Thursday</td><td><input id="thu_m" readonly></td><td><input id="thu_n" readonly></td></tr>
+            <tr><td>Friday</td><td><input id="fri_m" readonly></td><td><input id="fri_n" readonly></td></tr>
+        </tbody>
+    </table>
+    <button class="print" onclick="window.print()">Print Roster</button>
+</div>
+
+<script>
+    // Haider-কে শুরুতে রেখে বাকিগুলো Alphabetical অর্ডারে সাজানো
+    const doctors = ['Haider', 'Anamika', 'Anik', 'Farhana', 'Lubna', 'Mahmood', 'Mehedi', 'Nasrin', 'Saki', 'Shamim', 'Sharif'];
+    let active = null;
+
+    function renderButtons() {
+        let counts = {};
+        doctors.forEach(d => counts[d] = 0);
+        document.querySelectorAll("input").forEach(inp => {
+            if (inp.value) {
+                inp.value.split(/,|\/ /).forEach(name => {
+                    name = name.trim();
+                    if (counts[name] != undefined) counts[name]++;
+                });
+            }
+        });
+
+        let container = document.getElementById("buttons");
+        container.innerHTML = "";
+        
+        doctors.forEach(doc => {
+            let btn = document.createElement("button");
+            btn.className = "doc-btn";
+            btn.innerHTML = `${doc} <span>${counts[doc]}/4</span>`;
+            if (counts[doc] >= 4) btn.disabled = true;
+            btn.onclick = () => addName(doc);
+            container.appendChild(btn);
+        });
+
+        let clear = document.createElement("button");
+        clear.className = "doc-btn clear-btn";
+        clear.innerText = "Clear";
+        clear.onclick = (e) => { e.stopPropagation(); clearField(); };
+        container.appendChild(clear);
+    }
+
+    document.querySelectorAll("input").forEach(inp => {
+        inp.onclick = (e) => {
+            e.stopPropagation();
+            document.querySelectorAll("input").forEach(i => i.classList.remove('selected-input'));
+            active = inp;
+            active.classList.add('selected-input');
+        };
+    });
+
+    function addName(name) {
+        if (!active) { alert("আগে একটি ঘর সিলেক্ট করুন!"); return; }
+        
+        let row = active.closest("tr");
+        let used = false;
+        row.querySelectorAll("input").forEach(inp => { if (inp.value.includes(name)) used = true; });
+
+        if (used) { alert("⚠️ একই দিনে ডাবল ডিউটি দেওয়া যাবে না!"); return; }
+
+        // নাইট শিফটের জন্য ২ জনের সীমাবদ্ধতা
+        if (active.id.endsWith("_n")) {
+            let count = active.value ? active.value.split(" / ").length : 0;
+            if (count >= 2) { alert("⚠️ নাইট শিফটে ২ জনের বেশি দেওয়া যাবে না!"); return; }
+        }
+        
+        let sep = active.id.endsWith("_n") ? " / " : ", ";
+        if (active.value === "") active.value = name;
+        else active.value += sep + name;
+        
+        renderButtons();
+    }
+
+    function clearField() {
+        if (active) { active.value = ""; renderButtons(); }
+    }
+
+    window.onload = renderButtons;
+</script>
+</body>
+</html>
