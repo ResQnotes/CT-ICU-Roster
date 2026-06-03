@@ -150,7 +150,6 @@
         let counts = {};
         doctors.forEach(d => counts[d] = 0);
         
-        // Count shifts based on the 'data-names' attribute
         document.querySelectorAll(".assignable").forEach(box => {
             let names = box.getAttribute("data-names");
             if (names && !box.id.endsWith("_l")) {
@@ -205,12 +204,15 @@
         }
     }
 
+    // Updated Format Date Function to Output DD/MM/YYYY
     function formatDate(dateString) {
-        const options = { month: 'short', day: 'numeric' };
-        return new Date(dateString).toLocaleDateString('bn-BD', options);
+        let d = new Date(dateString);
+        let day = ("0" + d.getDate()).slice(-2);
+        let month = ("0" + (d.getMonth() + 1)).slice(-2);
+        let year = d.getFullYear();
+        return `${day}/${month}/${year}`;
     }
 
-    // Set active box on click
     document.querySelectorAll(".assignable").forEach(box => {
         box.onclick = (e) => {
             e.stopPropagation();
@@ -226,7 +228,6 @@
         let row = active.closest("tr");
         let used = false;
         
-        // Check if doctor is already assigned on this day
         row.querySelectorAll(".assignable").forEach(box => { 
             let existingNames = box.getAttribute("data-names") || "";
             if (existingNames.split(",").includes(name)) used = true; 
@@ -247,17 +248,15 @@
         renderButtons();
     }
     
-    // Renders the names as beautiful visual chips inside the div
     function renderChips(box) {
         let names = box.getAttribute("data-names");
-        box.innerHTML = ""; // Clear existing UI
+        box.innerHTML = ""; 
         if (!names) return;
         
         names.split(",").forEach(name => {
             let span = document.createElement("span");
             span.className = "name-chip";
             
-            // Add custom colors based on shift type
             if (box.id.endsWith("_n")) span.classList.add("night-chip");
             if (box.id.endsWith("_l")) span.classList.add("leave-chip");
             
