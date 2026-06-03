@@ -7,20 +7,36 @@
 
 <style>
     body { font-family: 'Segoe UI', sans-serif; background: #f1f5f9; padding: 20px; }
-    .container { max-width: 950px; margin: auto; background: #fff; padding: 25px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+    .container { max-width: 1000px; margin: auto; background: #fff; padding: 25px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); position: relative; padding-bottom: 50px; }
     h2 { text-align: center; color: #1e3a8a; }
     .selection-panel { border: 2px solid #3b82f6; padding: 15px; margin-bottom: 15px; border-radius: 8px; }
     .doc-buttons { display: flex; flex-wrap: wrap; gap: 8px; }
     .doc-btn { padding: 10px 14px; border-radius: 20px; border: 1px solid #ccc; cursor: pointer; font-weight: bold; transition: 0.3s; }
     .doc-btn span { display: block; font-size: 11px; }
     .doc-btn:disabled { background: #ddd; cursor: not-allowed; opacity: 0.7; }
+    
+    /* Leave Status Bar Styling */
+    .leave-summary-bar { background: #fef2f2; border: 1px solid #fca5a5; padding: 12px; border-radius: 6px; margin-bottom: 15px; color: #991b1b; font-size: 14px; }
+    .leave-summary-bar strong { color: #dc2626; }
+    .leave-item { display: inline-block; background: #fff; border: 1px solid #fca5a5; padding: 2px 8px; border-radius: 4px; margin: 2px 5px; font-weight: 600; font-size: 13px;}
+
     table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-    th, td { border: 1px solid #ccc; padding: 10px; }
+    th, td { border: 1px solid #ccc; padding: 10px; text-align: center; }
     th { background: #eee; }
-    input { width: 92%; padding: 8px; cursor: pointer; border: 1px solid #ccc; border-radius: 4px; }
+    input.assignable { width: 92%; padding: 8px; cursor: pointer; border: 1px solid #ccc; border-radius: 4px; text-align: center; }
+    input[type="date"] { padding: 7px; border: 1px solid #ccc; border-radius: 4px; font-family: inherit; cursor: pointer; }
     .selected-input { border: 2px solid #3b82f6; background-color: #eff6ff; outline: none; }
     .print { margin-top: 15px; float: right; padding: 10px 20px; background: green; color: white; border: none; cursor: pointer; border-radius: 5px; }
     .clear-btn { background: #ef4444; color: white; }
+    
+    /* Developer Credit Styling */
+    .developer-credit { position: absolute; bottom: 15px; left: 0; right: 0; text-align: center; font-size: 11px; color: #9ca3af; }
+    
+    @media print {
+        .print, .selection-panel { display: none; }
+        .container { box-shadow: none; padding: 0; }
+        .developer-credit { position: static; margin-top: 20px; }
+    }
 </style>
 </head>
 
@@ -28,38 +44,86 @@
 
 <div class="container">
     <h2>CT-ICU Weekly Roster</h2>
+    
     <div class="selection-panel">
         <b>💡 নির্দেশনা:</b> আগে ঘরে ক্লিক করুন → তারপর ডাক্তার নির্বাচন করুন
         <div class="doc-buttons" id="buttons" style="margin-top: 10px;"></div>
     </div>
 
+    <!-- Doctors on Leave Summary Bar -->
+    <div class="leave-summary-bar" id="leaveBar">
+        <strong>🌴 আজকের ছুটিতে:</strong> কোনো ছুটি নির্ধারিত নেই
+    </div>
+
     <table>
         <thead>
-            <tr><th>Day</th><th>Morning</th><th>Night (Max 2)</th></tr>
+            <tr>
+                <th>Date</th>
+                <th>Morning</th>
+                <th>Night (Max 2)</th>
+                <th>On Leave</th>
+            </tr>
         </thead>
         <tbody>
-            <tr><td>Saturday</td><td><input id="sat_m" readonly></td><td><input id="sat_n" readonly></td></tr>
-            <tr><td>Sunday</td><td><input id="sun_m" readonly></td><td><input id="sun_n" readonly></td></tr>
-            <tr><td>Monday</td><td><input id="mon_m" readonly></td><td><input id="mon_n" readonly></td></tr>
-            <tr><td>Tuesday</td><td><input id="tue_m" readonly></td><td><input id="tue_n" readonly></td></tr>
-            <tr><td>Wednesday</td><td><input id="wed_m" readonly></td><td><input id="wed_n" readonly></td></tr>
-            <tr><td>Thursday</td><td><input id="thu_m" readonly></td><td><input id="thu_n" readonly></td></tr>
-            <tr><td>Friday</td><td><input id="fri_m" readonly></td><td><input id="fri_n" readonly></td></tr>
+            <tr>
+                <td><input type="date" onchange="updateLeaveBar()"></td>
+                <td><input id="d1_m" class="assignable" readonly></td>
+                <td><input id="d1_n" class="assignable" readonly></td>
+                <td><input id="d1_l" class="assignable" readonly></td>
+            </tr>
+            <tr>
+                <td><input type="date" onchange="updateLeaveBar()"></td>
+                <td><input id="d2_m" class="assignable" readonly></td>
+                <td><input id="d2_n" class="assignable" readonly></td>
+                <td><input id="d2_l" class="assignable" readonly></td>
+            </tr>
+            <tr>
+                <td><input type="date" onchange="updateLeaveBar()"></td>
+                <td><input id="d3_m" class="assignable" readonly></td>
+                <td><input id="d3_n" class="assignable" readonly></td>
+                <td><input id="d3_l" class="assignable" readonly></td>
+            </tr>
+            <tr>
+                <td><input type="date" onchange="updateLeaveBar()"></td>
+                <td><input id="d4_m" class="assignable" readonly></td>
+                <td><input id="d4_n" class="assignable" readonly></td>
+                <td><input id="d4_l" class="assignable" readonly></td>
+            </tr>
+            <tr>
+                <td><input type="date" onchange="updateLeaveBar()"></td>
+                <td><input id="d5_m" class="assignable" readonly></td>
+                <td><input id="d5_n" class="assignable" readonly></td>
+                <td><input id="d5_l" class="assignable" readonly></td>
+            </tr>
+            <tr>
+                <td><input type="date" onchange="updateLeaveBar()"></td>
+                <td><input id="d6_m" class="assignable" readonly></td>
+                <td><input id="d6_n" class="assignable" readonly></td>
+                <td><input id="d6_l" class="assignable" readonly></td>
+            </tr>
+            <tr>
+                <td><input type="date" onchange="updateLeaveBar()"></td>
+                <td><input id="d7_m" class="assignable" readonly></td>
+                <td><input id="d7_n" class="assignable" readonly></td>
+                <td><input id="d7_l" class="assignable" readonly></td>
+            </tr>
         </tbody>
     </table>
     <button class="print" onclick="window.print()">Print Roster</button>
+    
+    <div class="developer-credit">Developed by Dr. Mirza Shamim</div>
 </div>
 
 <script>
-    // Haider-কে শুরুতে রেখে বাকিগুলো Alphabetical অর্ডারে সাজানো
     const doctors = ['Haider', 'Anamika', 'Anik', 'Farhana', 'Lubna', 'Mahmood', 'Mehedi', 'Nasrin', 'Saki', 'Shamim', 'Sharif'];
     let active = null;
 
     function renderButtons() {
         let counts = {};
         doctors.forEach(d => counts[d] = 0);
-        document.querySelectorAll("input").forEach(inp => {
-            if (inp.value) {
+        
+        document.querySelectorAll("input.assignable").forEach(inp => {
+            if (inp.value && !inp.id.endsWith("_l")) {
                 inp.value.split(/,|\/ /).forEach(name => {
                     name = name.trim();
                     if (counts[name] != undefined) counts[name]++;
@@ -84,12 +148,44 @@
         clear.innerText = "Clear";
         clear.onclick = (e) => { e.stopPropagation(); clearField(); };
         container.appendChild(clear);
+
+        updateLeaveBar();
     }
 
-    document.querySelectorAll("input").forEach(inp => {
+    function updateLeaveBar() {
+        let leaveBar = document.getElementById("leaveBar");
+        let leaveRecords = [];
+
+        document.querySelectorAll("tbody tr").forEach(row => {
+            let dateInput = row.querySelector("input[type='date']").value;
+            let leaveInput = row.querySelector("input[id$='_l']").value;
+
+            if (leaveInput) {
+                let displayDate = dateInput ? formatDate(dateInput) : "তারিখহীন দিন";
+                leaveInput.split(/,|\/ /).forEach(name => {
+                    if(name.trim()) {
+                        leaveRecords.push(`<span class="leave-item">${name.trim()} (${displayDate})</span>`);
+                    }
+                });
+            }
+        });
+
+        if (leaveRecords.length > 0) {
+            leaveBar.innerHTML = `<strong>🌴 ছুটিতে আছেন:</strong> ` + leaveRecords.join(" ");
+        } else {
+            leaveBar.innerHTML = `<strong>🌴 আজকের ছুটিতে:</strong> কোনো ছুটি নির্ধারিত নেই`;
+        }
+    }
+
+    function formatDate(dateString) {
+        const options = { month: 'short', day: 'numeric' };
+        return new Date(dateString).toLocaleDateString('bn-BD', options);
+    }
+
+    document.querySelectorAll("input.assignable").forEach(inp => {
         inp.onclick = (e) => {
             e.stopPropagation();
-            document.querySelectorAll("input").forEach(i => i.classList.remove('selected-input'));
+            document.querySelectorAll("input.assignable").forEach(i => i.classList.remove('selected-input'));
             active = inp;
             active.classList.add('selected-input');
         };
@@ -100,14 +196,16 @@
         
         let row = active.closest("tr");
         let used = false;
-        row.querySelectorAll("input").forEach(inp => { if (inp.value.includes(name)) used = true; });
+        
+        row.querySelectorAll("input.assignable").forEach(inp => { 
+            if (inp.value.includes(name)) used = true; 
+        });
 
-        if (used) { alert("⚠️ একই দিনে ডাবল ডিউটি দেওয়া যাবে না!"); return; }
+        if (used) { alert("⚠️ একই দিনে ডাবল ডিউটি বা ছুটির সাথে ডিউটি দেওয়া যাবে না!"); return; }
 
-        // নাইট শিফটের জন্য ২ জনের সীমাবদ্ধতা
         if (active.id.endsWith("_n")) {
             let count = active.value ? active.value.split(" / ").length : 0;
-            if (count >= 2) { alert("⚠️ নাইট শিফটে ২ জনের বেশি দেওয়া যাবে না!"); return; }
+            if (count >= 2) { alert("⚠️ নাইট শিফটে ২ জনের বেশি দেওয়া যাবে না!"); return; }
         }
         
         let sep = active.id.endsWith("_n") ? " / " : ", ";
