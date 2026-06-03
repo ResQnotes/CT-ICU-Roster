@@ -21,18 +21,47 @@
     .leave-item { display: inline-block; background: #fff; border: 1px solid #fca5a5; padding: 2px 8px; border-radius: 4px; margin: 2px 5px; font-weight: 600; font-size: 13px;}
 
     table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-    th, td { border: 1px solid #ccc; padding: 10px; text-align: center; }
+    th, td { border: 1px solid #ccc; padding: 10px; text-align: center; vertical-align: middle; }
     th { background: #eee; }
-    input.assignable { width: 92%; padding: 8px; cursor: pointer; border: 1px solid #ccc; border-radius: 4px; text-align: center; }
-    input[type="date"] { padding: 7px; border: 1px solid #ccc; border-radius: 4px; font-family: inherit; cursor: pointer; }
-    .selected-input { border: 2px solid #3b82f6; background-color: #eff6ff; outline: none; }
-    .print { margin-top: 15px; float: right; padding: 10px 20px; background: green; color: white; border: none; cursor: pointer; border-radius: 5px; }
-    .clear-btn { background: #ef4444; color: white; }
     
-    /* Developer Credit Styling */
+    input[type="date"] { padding: 7px; border: 1px solid #ccc; border-radius: 4px; font-family: inherit; cursor: pointer; }
+    
+    /* Auto Adaptive Input Box Styling */
+    .assignable { 
+        width: 90%; 
+        min-height: 38px; 
+        padding: 6px; 
+        cursor: pointer; 
+        border: 1px solid #ccc; 
+        border-radius: 6px; 
+        background: #fff; 
+        display: flex; 
+        flex-wrap: wrap; 
+        gap: 6px; 
+        align-items: center; 
+        justify-content: center;
+        margin: auto;
+        transition: 0.2s;
+    }
+    .selected-input { border: 2px solid #3b82f6; background-color: #eff6ff; outline: none; box-shadow: 0 0 5px rgba(59, 130, 246, 0.4); }
+    
+    /* Tag/Chip Styling for Names */
+    .name-chip {
+        background: #e0f2fe; color: #0369a1;
+        padding: 4px 10px; border-radius: 12px;
+        font-size: 13px; font-weight: 600;
+        border: 1px solid #bae6fd;
+    }
+    .night-chip { background: #1e293b; color: #f8fafc; border-color: #0f172a; }
+    .leave-chip { background: #fef2f2; color: #dc2626; border-color: #fecaca; }
+
+    .print { margin-top: 15px; float: right; padding: 10px 20px; background: green; color: white; border: none; cursor: pointer; border-radius: 5px; font-weight: bold; }
+    .clear-btn { background: #ef4444; color: white; border-color: #b91c1c; }
+    
     .developer-credit { position: absolute; bottom: 15px; left: 0; right: 0; text-align: center; font-size: 11px; color: #9ca3af; }
     
     @media print {
+        * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
         .print, .selection-panel { display: none; }
         .container { box-shadow: none; padding: 0; }
         .developer-credit { position: static; margin-top: 20px; }
@@ -46,11 +75,10 @@
     <h2>CT-ICU Weekly Roster</h2>
     
     <div class="selection-panel">
-        <b>💡 নির্দেশনা:</b> আগে ঘরে ক্লিক করুন → তারপর ডাক্তার নির্বাচন করুন
+        <b>💡 নির্দেশনা:</b> আগে নিচের যেকোনো বক্সে ক্লিক করুন → তারপর ওপর থেকে ডাক্তার নির্বাচন করুন
         <div class="doc-buttons" id="buttons" style="margin-top: 10px;"></div>
     </div>
 
-    <!-- Doctors on Leave Summary Bar -->
     <div class="leave-summary-bar" id="leaveBar">
         <strong>🌴 আজকের ছুটিতে:</strong> কোনো ছুটি নির্ধারিত নেই
     </div>
@@ -58,54 +86,54 @@
     <table>
         <thead>
             <tr>
-                <th>Date</th>
-                <th>Morning</th>
-                <th>Night (Max 2)</th>
-                <th>On Leave</th>
+                <th width="15%">Date</th>
+                <th width="30%">Morning</th>
+                <th width="30%">Night (Max 2)</th>
+                <th width="25%">On Leave</th>
             </tr>
         </thead>
         <tbody>
             <tr>
                 <td><input type="date" onchange="updateLeaveBar()"></td>
-                <td><input id="d1_m" class="assignable" readonly></td>
-                <td><input id="d1_n" class="assignable" readonly></td>
-                <td><input id="d1_l" class="assignable" readonly></td>
+                <td><div id="d1_m" class="assignable" data-names=""></div></td>
+                <td><div id="d1_n" class="assignable" data-names=""></div></td>
+                <td><div id="d1_l" class="assignable" data-names=""></div></td>
             </tr>
             <tr>
                 <td><input type="date" onchange="updateLeaveBar()"></td>
-                <td><input id="d2_m" class="assignable" readonly></td>
-                <td><input id="d2_n" class="assignable" readonly></td>
-                <td><input id="d2_l" class="assignable" readonly></td>
+                <td><div id="d2_m" class="assignable" data-names=""></div></td>
+                <td><div id="d2_n" class="assignable" data-names=""></div></td>
+                <td><div id="d2_l" class="assignable" data-names=""></div></td>
             </tr>
             <tr>
                 <td><input type="date" onchange="updateLeaveBar()"></td>
-                <td><input id="d3_m" class="assignable" readonly></td>
-                <td><input id="d3_n" class="assignable" readonly></td>
-                <td><input id="d3_l" class="assignable" readonly></td>
+                <td><div id="d3_m" class="assignable" data-names=""></div></td>
+                <td><div id="d3_n" class="assignable" data-names=""></div></td>
+                <td><div id="d3_l" class="assignable" data-names=""></div></td>
             </tr>
             <tr>
                 <td><input type="date" onchange="updateLeaveBar()"></td>
-                <td><input id="d4_m" class="assignable" readonly></td>
-                <td><input id="d4_n" class="assignable" readonly></td>
-                <td><input id="d4_l" class="assignable" readonly></td>
+                <td><div id="d4_m" class="assignable" data-names=""></div></td>
+                <td><div id="d4_n" class="assignable" data-names=""></div></td>
+                <td><div id="d4_l" class="assignable" data-names=""></div></td>
             </tr>
             <tr>
                 <td><input type="date" onchange="updateLeaveBar()"></td>
-                <td><input id="d5_m" class="assignable" readonly></td>
-                <td><input id="d5_n" class="assignable" readonly></td>
-                <td><input id="d5_l" class="assignable" readonly></td>
+                <td><div id="d5_m" class="assignable" data-names=""></div></td>
+                <td><div id="d5_n" class="assignable" data-names=""></div></td>
+                <td><div id="d5_l" class="assignable" data-names=""></div></td>
             </tr>
             <tr>
                 <td><input type="date" onchange="updateLeaveBar()"></td>
-                <td><input id="d6_m" class="assignable" readonly></td>
-                <td><input id="d6_n" class="assignable" readonly></td>
-                <td><input id="d6_l" class="assignable" readonly></td>
+                <td><div id="d6_m" class="assignable" data-names=""></div></td>
+                <td><div id="d6_n" class="assignable" data-names=""></div></td>
+                <td><div id="d6_l" class="assignable" data-names=""></div></td>
             </tr>
             <tr>
                 <td><input type="date" onchange="updateLeaveBar()"></td>
-                <td><input id="d7_m" class="assignable" readonly></td>
-                <td><input id="d7_n" class="assignable" readonly></td>
-                <td><input id="d7_l" class="assignable" readonly></td>
+                <td><div id="d7_m" class="assignable" data-names=""></div></td>
+                <td><div id="d7_n" class="assignable" data-names=""></div></td>
+                <td><div id="d7_l" class="assignable" data-names=""></div></td>
             </tr>
         </tbody>
     </table>
@@ -122,11 +150,12 @@
         let counts = {};
         doctors.forEach(d => counts[d] = 0);
         
-        document.querySelectorAll("input.assignable").forEach(inp => {
-            if (inp.value && !inp.id.endsWith("_l")) {
-                inp.value.split(/,|\/ /).forEach(name => {
-                    name = name.trim();
-                    if (counts[name] != undefined) counts[name]++;
+        // Count shifts based on the 'data-names' attribute
+        document.querySelectorAll(".assignable").forEach(box => {
+            let names = box.getAttribute("data-names");
+            if (names && !box.id.endsWith("_l")) {
+                names.split(",").forEach(name => {
+                    if (counts[name] !== undefined) counts[name]++;
                 });
             }
         });
@@ -145,7 +174,7 @@
 
         let clear = document.createElement("button");
         clear.className = "doc-btn clear-btn";
-        clear.innerText = "Clear";
+        clear.innerText = "Clear Box";
         clear.onclick = (e) => { e.stopPropagation(); clearField(); };
         container.appendChild(clear);
 
@@ -158,14 +187,13 @@
 
         document.querySelectorAll("tbody tr").forEach(row => {
             let dateInput = row.querySelector("input[type='date']").value;
-            let leaveInput = row.querySelector("input[id$='_l']").value;
+            let leaveBox = row.querySelector("[id$='_l']");
+            let leaveNames = leaveBox.getAttribute("data-names");
 
-            if (leaveInput) {
+            if (leaveNames) {
                 let displayDate = dateInput ? formatDate(dateInput) : "তারিখহীন দিন";
-                leaveInput.split(/,|\/ /).forEach(name => {
-                    if(name.trim()) {
-                        leaveRecords.push(`<span class="leave-item">${name.trim()} (${displayDate})</span>`);
-                    }
+                leaveNames.split(",").forEach(name => {
+                    if(name) leaveRecords.push(`<span class="leave-item">${name} (${displayDate})</span>`);
                 });
             }
         });
@@ -182,41 +210,68 @@
         return new Date(dateString).toLocaleDateString('bn-BD', options);
     }
 
-    document.querySelectorAll("input.assignable").forEach(inp => {
-        inp.onclick = (e) => {
+    // Set active box on click
+    document.querySelectorAll(".assignable").forEach(box => {
+        box.onclick = (e) => {
             e.stopPropagation();
-            document.querySelectorAll("input.assignable").forEach(i => i.classList.remove('selected-input'));
-            active = inp;
+            document.querySelectorAll(".assignable").forEach(i => i.classList.remove('selected-input'));
+            active = box;
             active.classList.add('selected-input');
         };
     });
 
     function addName(name) {
-        if (!active) { alert("আগে একটি ঘর সিলেক্ট করুন!"); return; }
+        if (!active) { alert("আগে টেবিল থেকে একটি বক্স সিলেক্ট করুন!"); return; }
         
         let row = active.closest("tr");
         let used = false;
         
-        row.querySelectorAll("input.assignable").forEach(inp => { 
-            if (inp.value.includes(name)) used = true; 
+        // Check if doctor is already assigned on this day
+        row.querySelectorAll(".assignable").forEach(box => { 
+            let existingNames = box.getAttribute("data-names") || "";
+            if (existingNames.split(",").includes(name)) used = true; 
         });
 
         if (used) { alert("⚠️ একই দিনে ডাবল ডিউটি বা ছুটির সাথে ডিউটি দেওয়া যাবে না!"); return; }
 
-        if (active.id.endsWith("_n")) {
-            let count = active.value ? active.value.split(" / ").length : 0;
-            if (count >= 2) { alert("⚠️ নাইট শিফটে ২ জনের বেশি দেওয়া যাবে না!"); return; }
+        let currentNames = active.getAttribute("data-names") ? active.getAttribute("data-names").split(",") : [];
+
+        if (active.id.endsWith("_n") && currentNames.length >= 2) {
+            alert("⚠️ নাইট শিফটে ২ জনের বেশি দেওয়া যাবে না!"); return; 
         }
         
-        let sep = active.id.endsWith("_n") ? " / " : ", ";
-        if (active.value === "") active.value = name;
-        else active.value += sep + name;
+        currentNames.push(name);
+        active.setAttribute("data-names", currentNames.join(","));
         
+        renderChips(active);
         renderButtons();
+    }
+    
+    // Renders the names as beautiful visual chips inside the div
+    function renderChips(box) {
+        let names = box.getAttribute("data-names");
+        box.innerHTML = ""; // Clear existing UI
+        if (!names) return;
+        
+        names.split(",").forEach(name => {
+            let span = document.createElement("span");
+            span.className = "name-chip";
+            
+            // Add custom colors based on shift type
+            if (box.id.endsWith("_n")) span.classList.add("night-chip");
+            if (box.id.endsWith("_l")) span.classList.add("leave-chip");
+            
+            span.innerText = name;
+            box.appendChild(span);
+        });
     }
 
     function clearField() {
-        if (active) { active.value = ""; renderButtons(); }
+        if (active) { 
+            active.setAttribute("data-names", ""); 
+            renderChips(active);
+            renderButtons(); 
+        }
     }
 
     window.onload = renderButtons;
