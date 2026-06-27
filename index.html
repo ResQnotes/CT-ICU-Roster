@@ -152,7 +152,8 @@
         
         document.querySelectorAll(".assignable").forEach(box => {
             let names = box.getAttribute("data-names");
-            if (names && !box.id.endsWith("_l")) {
+            // Changed Logic: CL/Leave now counts towards the total 4 limit
+            if (names) {
                 names.split(",").forEach(name => {
                     if (counts[name] !== undefined) counts[name]++;
                 });
@@ -204,7 +205,6 @@
         }
     }
 
-    // Updated Format Date Function to Output DD/MM/YYYY
     function formatDate(dateString) {
         let d = new Date(dateString);
         let day = ("0" + d.getDate()).slice(-2);
@@ -226,8 +226,11 @@
         if (!active) { alert("আগে টেবিল থেকে একটি বক্স সিলেক্ট করুন!"); return; }
         
         let row = active.closest("tr");
+        let tbody = row.parentNode;
+        let rowIndex = Array.from(tbody.children).indexOf(row);
         let used = false;
         
+        // 1. Check for double duty on the same day
         row.querySelectorAll(".assignable").forEach(box => { 
             let existingNames = box.getAttribute("data-names") || "";
             if (existingNames.split(",").includes(name)) used = true; 
@@ -235,8 +238,30 @@
 
         if (used) { alert("⚠️ একই দিনে ডাবল ডিউটি বা ছুটির সাথে ডিউটি দেওয়া যাবে না!"); return; }
 
+        // 2. Logic: No Morning Duty immediately after Night Duty
+        if (active.id.endsWith("_m") && rowIndex > 0) {
+            // If assigning morning, check yesterday's night
+            let prevNightBox = tbody.children[rowIndex - 1].querySelector("[id$='_n']");
+            let prevNightNames = prevNightBox.getAttribute("data-names") || "";
+            if (prevNightNames.split(",").includes(name)) {
+                alert("⚠️ নাইট শিফটের পরের দিন সকালে ডিউটি দেওয়া যাবে না!");
+                return;
+            }
+        }
+
+        if (active.id.endsWith("_n") && rowIndex < tbody.children.length - 1) {
+            // If assigning night, check tomorrow's morning
+            let nextMorningBox = tbody.children[rowIndex + 1].querySelector("[id$='_m']");
+            let nextMorningNames = nextMorningBox.getAttribute("data-names") || "";
+            if (nextMorningNames.split(",").includes(name)) {
+                alert("⚠️ এই নাইটের পরের দিন সকালে ইতিমধ্যে তার ডিউটি দেওয়া আছে!");
+                return;
+            }
+        }
+
         let currentNames = active.getAttribute("data-names") ? active.getAttribute("data-names").split(",") : [];
 
+        // 3. Logic: Max 2 doctors in Night Shift
         if (active.id.endsWith("_n") && currentNames.length >= 2) {
             alert("⚠️ নাইট শিফটে ২ জনের বেশি দেওয়া যাবে না!"); return; 
         }
