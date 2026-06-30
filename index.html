@@ -15,7 +15,6 @@
     .doc-btn span { display: block; font-size: 11px; }
     .doc-btn:disabled { background: #ddd; cursor: not-allowed; opacity: 0.7; }
     
-    /* Leave Status Bar Styling */
     .leave-summary-bar { background: #fef2f2; border: 1px solid #fca5a5; padding: 12px; border-radius: 6px; margin-bottom: 15px; color: #991b1b; font-size: 14px; }
     .leave-summary-bar strong { color: #dc2626; }
     .leave-item { display: inline-block; background: #fff; border: 1px solid #fca5a5; padding: 2px 8px; border-radius: 4px; margin: 2px 5px; font-weight: 600; font-size: 13px;}
@@ -23,41 +22,19 @@
     table { width: 100%; border-collapse: collapse; margin-top: 10px; }
     th, td { border: 1px solid #ccc; padding: 10px; text-align: center; vertical-align: middle; }
     th { background: #eee; }
+    .day-name { font-weight: bold; color: #4b5563; }
     
     input[type="date"] { padding: 7px; border: 1px solid #ccc; border-radius: 4px; font-family: inherit; cursor: pointer; }
     
-    /* Auto Adaptive Input Box Styling */
-    .assignable { 
-        width: 90%; 
-        min-height: 38px; 
-        padding: 6px; 
-        cursor: pointer; 
-        border: 1px solid #ccc; 
-        border-radius: 6px; 
-        background: #fff; 
-        display: flex; 
-        flex-wrap: wrap; 
-        gap: 6px; 
-        align-items: center; 
-        justify-content: center;
-        margin: auto;
-        transition: 0.2s;
-    }
+    .assignable { width: 90%; min-height: 38px; padding: 6px; cursor: pointer; border: 1px solid #ccc; border-radius: 6px; background: #fff; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; justify-content: center; margin: auto; transition: 0.2s; }
     .selected-input { border: 2px solid #3b82f6; background-color: #eff6ff; outline: none; box-shadow: 0 0 5px rgba(59, 130, 246, 0.4); }
     
-    /* Tag/Chip Styling for Names */
-    .name-chip {
-        background: #e0f2fe; color: #0369a1;
-        padding: 4px 10px; border-radius: 12px;
-        font-size: 13px; font-weight: 600;
-        border: 1px solid #bae6fd;
-    }
+    .name-chip { background: #e0f2fe; color: #0369a1; padding: 4px 10px; border-radius: 12px; font-size: 13px; font-weight: 600; border: 1px solid #bae6fd; }
     .night-chip { background: #1e293b; color: #f8fafc; border-color: #0f172a; }
     .leave-chip { background: #fef2f2; color: #dc2626; border-color: #fecaca; }
 
     .print { margin-top: 15px; float: right; padding: 10px 20px; background: green; color: white; border: none; cursor: pointer; border-radius: 5px; font-weight: bold; }
     .clear-btn { background: #ef4444; color: white; border-color: #b91c1c; }
-    
     .developer-credit { position: absolute; bottom: 15px; left: 0; right: 0; text-align: center; font-size: 11px; color: #9ca3af; }
     
     @media print {
@@ -68,77 +45,31 @@
     }
 </style>
 </head>
-
 <body>
 
 <div class="container">
     <h2>CT-ICU Weekly Roster</h2>
-    
     <div class="selection-panel">
         <b>💡 নির্দেশনা:</b> আগে নিচের যেকোনো বক্সে ক্লিক করুন → তারপর ওপর থেকে ডাক্তার নির্বাচন করুন
         <div class="doc-buttons" id="buttons" style="margin-top: 10px;"></div>
     </div>
 
-    <div class="leave-summary-bar" id="leaveBar">
-        <strong>🌴 আজকের ছুটিতে:</strong> কোনো ছুটি নির্ধারিত নেই
-    </div>
+    <div class="leave-summary-bar" id="leaveBar"><strong>🌴 আজকের ছুটিতে:</strong> কোনো ছুটি নির্ধারিত নেই</div>
 
     <table>
         <thead>
             <tr>
                 <th width="15%">Date</th>
-                <th width="30%">Morning</th>
-                <th width="30%">Night (Max 2)</th>
+                <th width="10%">Day</th>
+                <th width="25%">Morning</th>
+                <th width="25%">Night (Max 2)</th>
                 <th width="25%">On Leave</th>
             </tr>
         </thead>
-        <tbody>
-            <tr>
-                <td><input type="date" onchange="updateLeaveBar()"></td>
-                <td><div id="d1_m" class="assignable" data-names=""></div></td>
-                <td><div id="d1_n" class="assignable" data-names=""></div></td>
-                <td><div id="d1_l" class="assignable" data-names=""></div></td>
-            </tr>
-            <tr>
-                <td><input type="date" onchange="updateLeaveBar()"></td>
-                <td><div id="d2_m" class="assignable" data-names=""></div></td>
-                <td><div id="d2_n" class="assignable" data-names=""></div></td>
-                <td><div id="d2_l" class="assignable" data-names=""></div></td>
-            </tr>
-            <tr>
-                <td><input type="date" onchange="updateLeaveBar()"></td>
-                <td><div id="d3_m" class="assignable" data-names=""></div></td>
-                <td><div id="d3_n" class="assignable" data-names=""></div></td>
-                <td><div id="d3_l" class="assignable" data-names=""></div></td>
-            </tr>
-            <tr>
-                <td><input type="date" onchange="updateLeaveBar()"></td>
-                <td><div id="d4_m" class="assignable" data-names=""></div></td>
-                <td><div id="d4_n" class="assignable" data-names=""></div></td>
-                <td><div id="d4_l" class="assignable" data-names=""></div></td>
-            </tr>
-            <tr>
-                <td><input type="date" onchange="updateLeaveBar()"></td>
-                <td><div id="d5_m" class="assignable" data-names=""></div></td>
-                <td><div id="d5_n" class="assignable" data-names=""></div></td>
-                <td><div id="d5_l" class="assignable" data-names=""></div></td>
-            </tr>
-            <tr>
-                <td><input type="date" onchange="updateLeaveBar()"></td>
-                <td><div id="d6_m" class="assignable" data-names=""></div></td>
-                <td><div id="d6_n" class="assignable" data-names=""></div></td>
-                <td><div id="d6_l" class="assignable" data-names=""></div></td>
-            </tr>
-            <tr>
-                <td><input type="date" onchange="updateLeaveBar()"></td>
-                <td><div id="d7_m" class="assignable" data-names=""></div></td>
-                <td><div id="d7_n" class="assignable" data-names=""></div></td>
-                <td><div id="d7_l" class="assignable" data-names=""></div></td>
-            </tr>
-        </tbody>
+        <tbody id="rosterBody">
+            </tbody>
     </table>
     <button class="print" onclick="window.print()">Print Roster</button>
-    
     <div class="developer-credit">Developed by Dr. Mirza Shamim</div>
 </div>
 
@@ -146,23 +77,57 @@
     const doctors = ['Haider', 'Anamika', 'Anik', 'Farhana', 'Lubna', 'Mahmood', 'Mehedi', 'Nasrin', 'Saki', 'Shamim', 'Sharif'];
     let active = null;
 
+    // Create 7 Rows
+    const tbody = document.getElementById("rosterBody");
+    for(let i=1; i<=7; i++) {
+        tbody.innerHTML += `<tr>
+            <td><input type="date" onchange="updateRowDay(this)"></td>
+            <td class="day-name">-</td>
+            <td><div id="d${i}_m" class="assignable" data-names=""></div></td>
+            <td><div id="d${i}_n" class="assignable" data-names=""></div></td>
+            <td><div id="d${i}_l" class="assignable" data-names=""></div></td>
+        </tr>`;
+    }
+
+    function updateRowDay(input) {
+        const dayNames = ["রবিবার", "সোমবার", "মঙ্গলবার", "বুধবার", "বৃহস্পতিবার", "শুক্রবার", "শনিবার"];
+        let dateVal = new Date(input.value);
+        let dayName = isNaN(dateVal.getTime()) ? "-" : dayNames[dateVal.getDay()];
+        input.parentElement.nextElementSibling.innerText = dayName;
+        updateLeaveBar();
+    }
+
+    function saveToLocalStorage() {
+        let rosterData = {};
+        document.querySelectorAll(".assignable").forEach(box => {
+            rosterData[box.id] = box.getAttribute("data-names") || "";
+        });
+        localStorage.setItem("ctIcuRoster", JSON.stringify(rosterData));
+    }
+
+    function loadFromLocalStorage() {
+        let savedData = localStorage.getItem("ctIcuRoster");
+        if (savedData) {
+            let rosterData = JSON.parse(savedData);
+            document.querySelectorAll(".assignable").forEach(box => {
+                if (rosterData[box.id]) {
+                    box.setAttribute("data-names", rosterData[box.id]);
+                    renderChips(box);
+                }
+            });
+        }
+    }
+
     function renderButtons() {
         let counts = {};
         doctors.forEach(d => counts[d] = 0);
-        
         document.querySelectorAll(".assignable").forEach(box => {
             let names = box.getAttribute("data-names");
-            // Changed Logic: CL/Leave now counts towards the total 4 limit
-            if (names) {
-                names.split(",").forEach(name => {
-                    if (counts[name] !== undefined) counts[name]++;
-                });
-            }
+            if (names) names.split(",").forEach(n => { if(counts[n] !== undefined) counts[n]++; });
         });
 
         let container = document.getElementById("buttons");
         container.innerHTML = "";
-        
         doctors.forEach(doc => {
             let btn = document.createElement("button");
             btn.className = "doc-btn";
@@ -177,128 +142,66 @@
         clear.innerText = "Clear Box";
         clear.onclick = (e) => { e.stopPropagation(); clearField(); };
         container.appendChild(clear);
-
         updateLeaveBar();
     }
 
-    function updateLeaveBar() {
-        let leaveBar = document.getElementById("leaveBar");
-        let leaveRecords = [];
-
-        document.querySelectorAll("tbody tr").forEach(row => {
-            let dateInput = row.querySelector("input[type='date']").value;
-            let leaveBox = row.querySelector("[id$='_l']");
-            let leaveNames = leaveBox.getAttribute("data-names");
-
-            if (leaveNames) {
-                let displayDate = dateInput ? formatDate(dateInput) : "তারিখহীন দিন";
-                leaveNames.split(",").forEach(name => {
-                    if(name) leaveRecords.push(`<span class="leave-item">${name} (${displayDate})</span>`);
-                });
-            }
-        });
-
-        if (leaveRecords.length > 0) {
-            leaveBar.innerHTML = `<strong>🌴 ছুটিতে আছেন:</strong> ` + leaveRecords.join(" ");
-        } else {
-            leaveBar.innerHTML = `<strong>🌴 আজকের ছুটিতে:</strong> কোনো ছুটি নির্ধারিত নেই`;
-        }
-    }
-
-    function formatDate(dateString) {
-        let d = new Date(dateString);
-        let day = ("0" + d.getDate()).slice(-2);
-        let month = ("0" + (d.getMonth() + 1)).slice(-2);
-        let year = d.getFullYear();
-        return `${day}/${month}/${year}`;
-    }
-
-    document.querySelectorAll(".assignable").forEach(box => {
-        box.onclick = (e) => {
-            e.stopPropagation();
-            document.querySelectorAll(".assignable").forEach(i => i.classList.remove('selected-input'));
-            active = box;
-            active.classList.add('selected-input');
-        };
-    });
-
     function addName(name) {
         if (!active) { alert("আগে টেবিল থেকে একটি বক্স সিলেক্ট করুন!"); return; }
-        
         let row = active.closest("tr");
         let tbody = row.parentNode;
         let rowIndex = Array.from(tbody.children).indexOf(row);
-        let used = false;
         
-        // 1. Check for double duty on the same day
-        row.querySelectorAll(".assignable").forEach(box => { 
-            let existingNames = box.getAttribute("data-names") || "";
-            if (existingNames.split(",").includes(name)) used = true; 
-        });
+        // Validation Logic
+        let used = false;
+        row.querySelectorAll(".assignable").forEach(box => { if((box.getAttribute("data-names") || "").split(",").includes(name)) used = true; });
+        if (used) { alert("⚠️ একই দিনে ডাবল ডিউটি বা ছুটির সাথে ডিউটি দেওয়া যাবে না!"); return; }
 
-        if (used) { alert("⚠️ একই দিনে ডাবল ডিউটি বা ছুটির সাথে ডিউটি দেওয়া যাবে না!"); return; }
-
-        // 2. Logic: No Morning Duty immediately after Night Duty
         if (active.id.endsWith("_m") && rowIndex > 0) {
-            // If assigning morning, check yesterday's night
-            let prevNightBox = tbody.children[rowIndex - 1].querySelector("[id$='_n']");
-            let prevNightNames = prevNightBox.getAttribute("data-names") || "";
-            if (prevNightNames.split(",").includes(name)) {
-                alert("⚠️ নাইট শিফটের পরের দিন সকালে ডিউটি দেওয়া যাবে না!");
-                return;
-            }
+            let prev = tbody.children[rowIndex - 1].querySelector("[id$='_n']");
+            if ((prev.getAttribute("data-names") || "").split(",").includes(name)) { alert("⚠️ নাইট শিফটের পরের দিন সকালে ডিউটি দেওয়া যাবে না!"); return; }
         }
-
-        if (active.id.endsWith("_n") && rowIndex < tbody.children.length - 1) {
-            // If assigning night, check tomorrow's morning
-            let nextMorningBox = tbody.children[rowIndex + 1].querySelector("[id$='_m']");
-            let nextMorningNames = nextMorningBox.getAttribute("data-names") || "";
-            if (nextMorningNames.split(",").includes(name)) {
-                alert("⚠️ এই নাইটের পরের দিন সকালে ইতিমধ্যে তার ডিউটি দেওয়া আছে!");
-                return;
-            }
-        }
-
+        
         let currentNames = active.getAttribute("data-names") ? active.getAttribute("data-names").split(",") : [];
-
-        // 3. Logic: Max 2 doctors in Night Shift
-        if (active.id.endsWith("_n") && currentNames.length >= 2) {
-            alert("⚠️ নাইট শিফটে ২ জনের বেশি দেওয়া যাবে না!"); return; 
-        }
+        if (active.id.endsWith("_n") && currentNames.length >= 2) { alert("⚠️ নাইট শিফটে ২ জনের বেশি দেওয়া যাবে না!"); return; }
         
         currentNames.push(name);
         active.setAttribute("data-names", currentNames.join(","));
-        
         renderChips(active);
         renderButtons();
+        saveToLocalStorage();
     }
-    
+
     function renderChips(box) {
         let names = box.getAttribute("data-names");
-        box.innerHTML = ""; 
+        box.innerHTML = "";
         if (!names) return;
-        
         names.split(",").forEach(name => {
             let span = document.createElement("span");
             span.className = "name-chip";
-            
             if (box.id.endsWith("_n")) span.classList.add("night-chip");
             if (box.id.endsWith("_l")) span.classList.add("leave-chip");
-            
             span.innerText = name;
             box.appendChild(span);
         });
     }
 
-    function clearField() {
-        if (active) { 
-            active.setAttribute("data-names", ""); 
-            renderChips(active);
-            renderButtons(); 
-        }
+    function updateLeaveBar() {
+        let leaveRecords = [];
+        document.querySelectorAll("tbody tr").forEach(row => {
+            let date = row.querySelector("input").value;
+            let names = row.querySelector("[id$='_l']").getAttribute("data-names");
+            if (names) names.split(",").forEach(n => { if(n) leaveRecords.push(`<span class="leave-item">${n} (${date || 'তারিখহীন'})</span>`); });
+        });
+        document.getElementById("leaveBar").innerHTML = `<strong>🌴 ছুটিতে আছেন:</strong> ${leaveRecords.length > 0 ? leaveRecords.join(" ") : 'কেউ নেই'}`;
     }
 
-    window.onload = renderButtons;
+    function clearField() { if (active) { active.setAttribute("data-names", ""); renderChips(active); renderButtons(); saveToLocalStorage(); } }
+
+    document.querySelectorAll(".assignable").forEach(box => {
+        box.onclick = (e) => { e.stopPropagation(); document.querySelectorAll(".assignable").forEach(i => i.classList.remove('selected-input')); active = box; active.classList.add('selected-input'); };
+    });
+
+    window.onload = () => { loadFromLocalStorage(); renderButtons(); };
 </script>
 </body>
 </html>
